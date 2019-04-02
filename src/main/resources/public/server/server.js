@@ -9,7 +9,10 @@ function connect() {
         stompClient.subscribe('/topic/greetings', greeting =>
             slider.style.left = JSON.parse(greeting.body).content + '%');
 
-        stompClient.subscribe('/topic/game', greeting =>
-            ball.style.left = JSON.parse(greeting.body).ball.x + '%')
+        stompClient.subscribe('/topic/game', greeting => {
+            let data = JSON.parse(greeting.body);
+            ball.style.left = data.ball.x + '%';
+            ball.style.top = data.ball.y + '%';
+        })
     });
 }

@@ -10,12 +10,12 @@ import java.util.concurrent.TimeUnit
 
 
 @Controller
-class WebsocketController constructor(@Autowired val template: SimpMessagingTemplate) {
+class WebsocketController constructor(@Autowired val template: SimpMessagingTemplate, @Autowired val positionController: PositionController) {
 
     init {
         Observable
-                .interval(1000 / 60, TimeUnit.MILLISECONDS)
-                .subscribe { template.convertAndSend("/topic/game", GameState(Ball((it % 100).toDouble(), 50.0))) }
+                .interval(positionController.tickrateInMillis, TimeUnit.MILLISECONDS)
+                .subscribe { template.convertAndSend("/topic/game", currentGameState()) }
     }
 
     @MessageMapping("/hello")
@@ -23,5 +23,11 @@ class WebsocketController constructor(@Autowired val template: SimpMessagingTemp
     @Throws(Exception::class)
     fun greeting(message: HelloMessage): Greeting {
         return Greeting(message.name)
+    }
+
+    fun currentGameState(): GameState {
+        positionController.updatePosition()
+        val (xPos, yPos) = positionController.position
+        return GameState(Ball(xPos, yPos))
     }
 }
