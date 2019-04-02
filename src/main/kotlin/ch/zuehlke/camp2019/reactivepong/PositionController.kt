@@ -16,26 +16,14 @@ class PositionController {
     val tickrateInMillis: Long = 10
     var position = Point(0.5, 0.5)
 
-
-    @GetMapping("/hello")
-    fun hello() = Mono.create { sink: MonoSink<String> ->
-        sink.success("Hello Reactor\n")
-    }
-
-    @GetMapping("/bye")
-    fun bye() = Flux.generate { sink: SynchronousSink<String> ->
-        sink.next("Bye\n")
-    }.take(50)
-
     @GetMapping("/position")
-    fun position() {
-        Flux.generate { sink: SynchronousSink<Point> ->
-            run {
-                updatePosition()
-                sink.next(position)
-            }
-        }.delayElements(Duration.ofMillis(tickrateInMillis))
-    }
+    fun position() =
+            Flux.generate { sink: SynchronousSink<Point> ->
+                run {
+                    updatePosition()
+                    sink.next(position)
+                }
+            }.delayElements(Duration.ofMillis(tickrateInMillis))
 
     fun updatePosition() {
         val newPosition = add(position, scale(velocity, tickrateInMillis / 1000.0))
