@@ -38,7 +38,7 @@ class PositionController {
     }
 
     fun updatePosition() {
-        val newPosition = add(position, scale(velocity, tickrateInMillis / 1000.0))
+        val newPosition = position.add(velocity.scale(tickrateInMillis / 1000.0))
         updateVelocity(newPosition)
         position = Point(restrictPosition(newPosition.x), restrictPosition(newPosition.y))
     }
