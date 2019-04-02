@@ -1,5 +1,6 @@
 function connect() {
     let socket = new SockJS('/gs-guide-websocket');
+    let id = Date.now().toString();
     stompClient = Stomp.over(socket);
     stompClient.debug = () => {
     };
@@ -7,22 +8,19 @@ function connect() {
         let slider = document.getElementById('slider');
         let ball = document.getElementById('ball');
 
-        stompClient.subscribe('/topic/game', result => {
+        stompClient.subscribe('/topic/game/' + id, result => {
             let data = JSON.parse(result.body);
             ball.style.left = data.ball.x + '%';
             ball.style.top = data.ball.y + '%';
             slider.style.left = data.leftPosition + '%';
-            stompClient.send("/app/requestGameState", {});
+            stompClient.send("/app/requestGameState", {}, id);
         });
-        stompClient.send("/app/requestGameState", {});
+        stompClient.send("/app/requestGameState", {}, id);
     });
 }
 
 function getAndShowQrCode(side) {
-    fetch('http://localhost:8080/qrcode/' + side)
-        .then(result => result.arrayBuffer())
-        .then(buffer => btoa(String.fromCharCode(...new Uint8Array(buffer))))
-        .then(base64 => document.getElementById('qrcode').src = `data:image/png;base64,${base64}`);
+    document.getElementById('qrcode').src = `/qrcode/${side}`;
 }
 
 function registerLeft() {

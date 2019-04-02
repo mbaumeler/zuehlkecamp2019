@@ -2,7 +2,6 @@ package ch.zuehlke.camp2019.reactivepong
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.handler.annotation.MessageMapping
-import org.springframework.messaging.handler.annotation.SendTo
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Controller
 
@@ -23,9 +22,8 @@ class WebsocketController constructor(@Autowired val template: SimpMessagingTemp
     }
 
     @MessageMapping("/requestGameState")
-    @SendTo("/topic/game")
-    fun onRequestGameState(): GameState {
-        return currentGameState()
+    fun onRequestGameState(id: String) {
+        template.convertAndSend("/topic/game/" + id, currentGameState())
     }
 
     fun currentGameState(): GameState {
