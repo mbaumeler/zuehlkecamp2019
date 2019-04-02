@@ -6,7 +6,13 @@ class PositionController {
 
     private val nanosPerSecond = 1_000_000_000.0
     private var lastUpdate = System.nanoTime()
-    private var velocity = Vector(30.0, 20.0)
+
+    private val nominalVelocity = 1.0
+    private val maxVelocityDifference = 0.25
+    private val minVelocity = nominalVelocity - (maxVelocityDifference * nominalVelocity)
+    private val maxVelocity = nominalVelocity + (maxVelocityDifference * nominalVelocity)
+    private var velocity = Vector(4.0, 3.0)
+
     var position = Point(0.5, 0.5)
 
     fun updatePosition() {
@@ -22,6 +28,9 @@ class PositionController {
         val xVelocity = velocity.x * velocityMultiplier(updatedPosition.x)
         val yVelocity = velocity.y * velocityMultiplier(updatedPosition.y)
         velocity = Vector(xVelocity, yVelocity)
+        if (velocity.length() < minVelocity || velocity.length() > maxVelocity) {
+            velocity = velocity.scale(nominalVelocity / velocity.length())
+        }
     }
 
     private fun restrictPosition(coord: Double) = when {
