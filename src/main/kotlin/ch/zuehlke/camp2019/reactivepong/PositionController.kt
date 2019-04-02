@@ -4,12 +4,16 @@ import kotlin.random.Random
 
 class PositionController {
 
+    private val nanosPerSecond = 1_000_000_000.0
+    private var lastUpdate = System.nanoTime()
     private var velocity = Vector(30.0, 20.0)
-    val tickrateInMillis: Long = 10
     var position = Point(0.5, 0.5)
 
     fun updatePosition() {
-        val newPosition = position.add(velocity.scale(tickrateInMillis / 1000.0))
+        val currentTime = System.nanoTime()
+        val timeDelta = currentTime - lastUpdate
+        lastUpdate = currentTime
+        val newPosition = position.add(velocity.scale(timeDelta / nanosPerSecond))
         updateVelocity(newPosition)
         position = Point(restrictPosition(newPosition.x), restrictPosition(newPosition.y))
     }
