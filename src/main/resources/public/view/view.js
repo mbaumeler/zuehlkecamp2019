@@ -16,3 +16,19 @@ function connect() {
         })
     });
 }
+
+function getAndShowQrCode(side) {
+    fetch('http://localhost:8080/qrcode/' + side)
+        .then(result => result.arrayBuffer())
+        .then(buffer => btoa(String.fromCharCode(...new Uint8Array(buffer))))
+        .then(base64 => document.getElementById('qrcode').src = `data:image/png;base64,${base64}`);
+}
+
+function registerLeft() {
+    getAndShowQrCode("left");
+
+}
+
+function registerRight() {
+    getAndShowQrCode("right");
+}
