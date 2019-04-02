@@ -5,7 +5,7 @@ function sendMessage(percent) {
 function connect() {
     let socket = new SockJS('/gs-guide-websocket');
     stompClient = Stomp.over(socket);
-    stompClient.connect({}, function (frame) {
+    stompClient.connect({}, () => {
         rxjs
             .fromEvent(document, 'touchmove')
             .subscribe((event) => sendMessage(100 / event.target.clientWidth * event.touches[0].clientX));
