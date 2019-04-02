@@ -10,7 +10,9 @@ import java.util.concurrent.TimeUnit
 
 
 @Controller
-class WebsocketController constructor(@Autowired val template: SimpMessagingTemplate, @Autowired val positionController: PositionController) {
+class WebsocketController constructor(@Autowired val template: SimpMessagingTemplate) {
+
+    private val positionController = PositionController()
 
     init {
         Observable

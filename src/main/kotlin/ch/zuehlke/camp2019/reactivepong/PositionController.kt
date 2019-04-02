@@ -1,29 +1,12 @@
 package ch.zuehlke.camp2019.reactivepong
 
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RestController
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
-import reactor.core.publisher.MonoSink
-import reactor.core.publisher.SynchronousSink
-import java.time.Duration
 import kotlin.random.Random
 
-@RestController
 class PositionController {
 
     private var velocity = Vector(30.0, 20.0)
     val tickrateInMillis: Long = 10
     var position = Point(0.5, 0.5)
-
-    @GetMapping("/position")
-    fun position() =
-            Flux.generate { sink: SynchronousSink<Point> ->
-                run {
-                    updatePosition()
-                    sink.next(position)
-                }
-            }.delayElements(Duration.ofMillis(tickrateInMillis))
 
     fun updatePosition() {
         val newPosition = position.add(velocity.scale(tickrateInMillis / 1000.0))
