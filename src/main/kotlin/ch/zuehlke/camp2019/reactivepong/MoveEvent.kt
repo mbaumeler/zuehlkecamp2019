@@ -1,3 +1,3 @@
 package ch.zuehlke.camp2019.reactivepong
 
-class Greeting(val content: Double)
+class MoveEvent(val x: Double)

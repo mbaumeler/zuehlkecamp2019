@@ -1,5 +1,5 @@
 function sendMessage(percent) {
-    stompClient.send("/app/hello", {}, JSON.stringify({'name': percent}));
+    stompClient.send("/app/move", {}, JSON.stringify({'x': percent}));
 }
 
 function connect() {

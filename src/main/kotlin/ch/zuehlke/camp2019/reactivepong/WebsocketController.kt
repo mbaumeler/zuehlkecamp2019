@@ -18,11 +18,11 @@ class WebsocketController constructor(@Autowired val template: SimpMessagingTemp
                 .subscribe { template.convertAndSend("/topic/game", currentGameState()) }
     }
 
-    @MessageMapping("/hello")
-    @SendTo("/topic/greetings")
+    @MessageMapping("/move")
+    @SendTo("/topic/moves")
     @Throws(Exception::class)
-    fun greeting(message: HelloMessage): Greeting {
-        return Greeting(message.name)
+    fun onMoveEvent(moveEvent: MoveEvent): MoveEvent {
+        return moveEvent
     }
 
     fun currentGameState(): GameState {
