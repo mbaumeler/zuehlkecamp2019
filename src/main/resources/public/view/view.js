@@ -6,14 +6,15 @@ function connect() {
     stompClient.connect({}, () => {
         let slider = document.getElementById('slider');
         let ball = document.getElementById('ball');
-        stompClient.subscribe('/topic/moves', greeting =>
-            slider.style.left = JSON.parse(greeting.body).x + '%');
 
-        stompClient.subscribe('/topic/game', greeting => {
-            let data = JSON.parse(greeting.body);
+        stompClient.subscribe('/topic/game', result => {
+            let data = JSON.parse(result.body);
             ball.style.left = data.ball.x + '%';
             ball.style.top = data.ball.y + '%';
-        })
+            slider.style.left = data.leftPosition + '%';
+            stompClient.send("/app/requestGameState", {});
+        });
+        stompClient.send("/app/requestGameState", {});
     });
 }
 
