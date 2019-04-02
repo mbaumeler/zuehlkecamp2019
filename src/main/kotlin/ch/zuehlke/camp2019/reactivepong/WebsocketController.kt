@@ -10,15 +10,17 @@ import org.springframework.stereotype.Controller
 class WebsocketController constructor(@Autowired val template: SimpMessagingTemplate) {
 
     private val positionController = PositionController()
-    private var leftPosition = 0.0
-    private var rightPosition = 0.0
+    private var leftPosition = Point(0.0, 0.0)
+    private var rightPosition = Point(0.0, 0.0)
 
-    @MessageMapping("/move")
-    fun onMoveEvent(moveEvent: MoveEvent) {
-        when (moveEvent.side) {
-            Side.LEFT -> leftPosition = moveEvent.x
-            Side.RIGHT -> rightPosition = moveEvent.x
-        }
+    @MessageMapping("/move/LEFT")
+    fun onMoveEventLeft(point: Point) {
+        leftPosition = point
+    }
+
+    @MessageMapping("/move/RIGHT")
+    fun onMoveEventRight(point: Point) {
+        rightPosition = point
     }
 
     @MessageMapping("/requestGameState")

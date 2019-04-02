@@ -1,7 +1,7 @@
-#slider {
-    width: 10%;
+.slider {
+    width: 120px;
     height: 40px;
-    background-color: #f00;
+    background-color: #999;
     position: absolute;
 }
 
@@ -11,6 +11,15 @@
     width: 50px;
     border-radius: 50%;
     position: absolute;
+}
+
+#sliderBottom {
+    bottom: 0px;
+}
+
+#sliderSide {
+    height: 120px;
+    width: 40px;
 }
 
 body {

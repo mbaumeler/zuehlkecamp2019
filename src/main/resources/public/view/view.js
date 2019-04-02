@@ -5,14 +5,18 @@ function connect() {
     stompClient.debug = () => {
     };
     stompClient.connect({}, () => {
-        let slider = document.getElementById('slider');
+        let sliderTop = document.getElementById('sliderTop');
+        let sliderSide = document.getElementById('sliderSide');
+        let sliderBottom = document.getElementById('sliderBottom');
         let ball = document.getElementById('ball');
 
         stompClient.subscribe('/topic/game/' + id, result => {
             let data = JSON.parse(result.body);
             ball.style.left = data.ball.x + '%';
             ball.style.top = data.ball.y + '%';
-            slider.style.left = data.leftPosition + '%';
+            sliderTop.style.left = data.left.x + '%';
+            sliderBottom.style.left = data.left.x + '%';
+            sliderSide.style.top = data.left.y + '%';
             stompClient.send("/app/requestGameState", {}, id);
         });
         stompClient.send("/app/requestGameState", {}, id);

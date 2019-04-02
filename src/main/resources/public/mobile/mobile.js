@@ -1,5 +1,5 @@
-function sendMessage(percent, side) {
-    stompClient.send("/app/move", {}, JSON.stringify({'x': percent, side}));
+function sendMessage(x, y, side) {
+    stompClient.send("/app/move/" + side, {}, JSON.stringify({x, y}));
 }
 
 function connect() {
@@ -9,6 +9,10 @@ function connect() {
     stompClient.connect({}, () => {
         rxjs
             .fromEvent(document, 'touchmove')
-            .subscribe((event) => sendMessage(100 / event.target.clientWidth * event.touches[0].clientX, side));
+            .subscribe((event) =>
+                sendMessage(
+                    100 / event.target.clientWidth * event.touches[0].clientX,
+                    100 / event.target.clientHeight * event.touches[0].clientY,
+                    side));
     });
 }
