@@ -12,3 +12,8 @@
     border-radius: 50%;
     position: absolute;
 }
+
+body {
+    padding: 0px;
+    margin: 0px 50px 50px 0px;
+}
