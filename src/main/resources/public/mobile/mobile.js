@@ -3,7 +3,7 @@ function sendMessage(percent, side) {
 }
 
 function connect() {
-    let side = location.search === '?side=left' ? 'left' : 'right';
+    let side = location.search === '?side=LEFT' ? 'LEFT' : 'RIGHT';
     let socket = new SockJS('/gs-guide-websocket');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, () => {

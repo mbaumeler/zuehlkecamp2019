@@ -17,11 +17,11 @@ class QrCodeResource {
 
 
     @GetMapping("qrcode/{side}", produces = arrayOf(MediaType.IMAGE_PNG_VALUE))
-    fun generate(@PathVariable("side") side: String): ByteArray? {
+    fun generate(@PathVariable("side") side: Side): ByteArray? {
         return generateQRCodeImage(350, 350, side);
     }
 
-    private fun generateQRCodeImage(width: Int, height: Int, side: String): ByteArray? {
+    private fun generateQRCodeImage(width: Int, height: Int, side: Side): ByteArray? {
 
         val socket = Socket()
         socket.connect(InetSocketAddress("google.com", 80))
@@ -29,7 +29,7 @@ class QrCodeResource {
 
 
         val qrCodeWriter = QRCodeWriter()
-        val bitMatrix = qrCodeWriter.encode("http:/$localAddress:8080/mobile/index.html?side=" + side, BarcodeFormat.QR_CODE, width, height)
+        val bitMatrix = qrCodeWriter.encode("http:/$localAddress:8080/mobile/index.html?side=$side", BarcodeFormat.QR_CODE, width, height)
         val output = ByteArrayOutputStream()
         MatrixToImageWriter.writeToStream(bitMatrix, "PNG", output)
         return output.toByteArray()

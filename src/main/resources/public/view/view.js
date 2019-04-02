@@ -25,10 +25,10 @@ function getAndShowQrCode(side) {
 }
 
 function registerLeft() {
-    getAndShowQrCode("left");
+    getAndShowQrCode("LEFT");
 
 }
 
 function registerRight() {
-    getAndShowQrCode("right");
+    getAndShowQrCode("RIGHT");
 }
