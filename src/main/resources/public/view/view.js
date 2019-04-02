@@ -10,7 +10,16 @@ function connect() {
         let sliderBottom = document.getElementById('sliderBottom');
         let ball = document.getElementById('ball');
 
-        stompClient.subscribe('/topic/game/' + id, result => {
+
+        const stompObserver = rxjs.Observable.create(observer => {
+            stompClient.subscribe('/topic/game/' + id,
+                result => observer.next(result));
+            stompClient.send("/app/requestGameState", {}, id);
+        });
+
+        stompObserver
+            .pipe(rxjs.operators.debounceTime(16))
+            .subscribe(result => {
             let data = JSON.parse(result.body);
             ball.style.left = data.ball.x + '%';
             ball.style.top = data.ball.y + '%';
@@ -19,7 +28,7 @@ function connect() {
             sliderSide.style.top = data.left.y + '%';
             stompClient.send("/app/requestGameState", {}, id);
         });
-        stompClient.send("/app/requestGameState", {}, id);
+        //stompClient.send("/app/requestGameState", {}, id);
     });
 }
 
