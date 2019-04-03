@@ -16,7 +16,7 @@ import java.net.Socket
 class QrCodeResource {
 
 
-    @GetMapping("qrcode/{side}", produces = arrayOf(MediaType.IMAGE_PNG_VALUE))
+    @GetMapping("qrcode/{side}", produces = [MediaType.IMAGE_PNG_VALUE])
     fun generate(@PathVariable("side") side: Side): ByteArray? {
         return generateQRCodeImage(350, 350, side);
     }
