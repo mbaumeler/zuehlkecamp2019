@@ -8,7 +8,7 @@ function connect() {
         let sliderTop = document.getElementById('sliderTop');
         let sliderSide = document.getElementById('sliderSide');
         let sliderBottom = document.getElementById('sliderBottom');
-        let ball = document.getElementById('ball');
+        let ballElm = document.getElementById('ball');
 
 
         const stompObserver = rxjs.Observable.create(observer => {
@@ -18,17 +18,16 @@ function connect() {
         });
 
         stompObserver
-            .pipe(rxjs.operators.debounceTime(16))
+            .pipe(rxjs.operators.debounceTime(15))
             .subscribe(result => {
-            let data = JSON.parse(result.body);
-            ball.style.left = data.ball.x + '%';
-            ball.style.top = data.ball.y + '%';
-            sliderTop.style.left = data.left.x + '%';
-            sliderBottom.style.left = data.left.x + '%';
-            sliderSide.style.top = data.left.y + '%';
-            stompClient.send("/app/requestGameState", {}, id);
-        });
-        //stompClient.send("/app/requestGameState", {}, id);
+                let {ball, left} = JSON.parse(result.body);
+                ballElm.style.left = `${ball.x}%`;
+                ballElm.style.top = `${ball.y}%`;
+                sliderTop.style.left = `${left.x}%`;
+                sliderBottom.style.left = `${left.x}%`;
+                sliderSide.style.top = `${left.y}%`;
+                stompClient.send("/app/requestGameState", {}, id);
+            });
     });
 }
 

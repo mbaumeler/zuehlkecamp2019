@@ -1,18 +1,15 @@
-function sendMessage(x, y, side) {
-    stompClient.send("/app/move/" + side, {}, JSON.stringify({x, y}));
-}
-
 function connect() {
-    let side = location.search === '?side=LEFT' ? 'LEFT' : 'RIGHT';
-    let socket = new SockJS('/gs-guide-websocket');
-    stompClient = Stomp.over(socket);
+    const side = location.search === '?side=LEFT' ? 'LEFT' : 'RIGHT';
+    const socket = new SockJS('/gs-guide-websocket');
+    const stompClient = Stomp.over(socket);
     stompClient.connect({}, () => {
         rxjs
             .fromEvent(document, 'touchmove')
-            .subscribe((event) =>
-                sendMessage(
-                    100 / event.target.clientWidth * event.touches[0].clientX,
-                    100 / event.target.clientHeight * event.touches[0].clientY,
-                    side));
+            .subscribe(({target, touches}) => {
+                const x = 100 / target.clientWidth * touches[0].clientX;
+                const y = 100 / target.clientHeight * touches[0].clientY;
+                const payload = JSON.stringify({x, y});
+                return stompClient.send(`/app/move/${side}`, {}, payload);
+            });
     });
 }
