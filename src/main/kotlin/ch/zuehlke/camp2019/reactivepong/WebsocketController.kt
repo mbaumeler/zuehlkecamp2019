@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Controller
+import java.util.concurrent.TimeUnit
 
 
 @Controller
@@ -49,6 +50,10 @@ class WebsocketController constructor(@Autowired val template: SimpMessagingTemp
                         onRequestGameState(it)
                     }
 
+                }
+        leftPlayer.throttleLatest(50, TimeUnit.MILLISECONDS)
+                .subscribe {
+                    System.out.print("-".repeat(it.x.toInt()) + "XXX" + "-".repeat(100 - it.x.toInt()) + "\r")
                 }
     }
 
