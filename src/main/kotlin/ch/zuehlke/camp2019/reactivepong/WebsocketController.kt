@@ -26,11 +26,11 @@ class WebsocketController constructor(@Autowired val template: SimpMessagingTemp
                         BiFunction { id, slidePair -> GameStateRequest(id, slidePair.first, slidePair.second) })
                 .withLatestFrom<Ball, GameState>(ballStream,
                         BiFunction { gameStateRequest, ball ->
-                            currentGameState(
+                            GameState(
+                                    updatePosition(ball),
                                     gameStateRequest.leftSlider,
                                     gameStateRequest.rightSlider,
-                                    gameStateRequest.id,
-                                    ball)
+                                    gameStateRequest.id)
                         })
                 .subscribe {
                     ballStream.onNext(it.ball)
@@ -51,10 +51,5 @@ class WebsocketController constructor(@Autowired val template: SimpMessagingTemp
     @MessageMapping("/requestGameState")
     fun onRequestGameState(id: String) {
         requestStream.onNext(id)
-    }
-
-    fun currentGameState(left: Point, right: Point, requester: String, ball: Ball): GameState {
-        val updatedBall = updatePosition(ball)
-        return GameState(updatedBall, left, right, requester)
     }
 }
