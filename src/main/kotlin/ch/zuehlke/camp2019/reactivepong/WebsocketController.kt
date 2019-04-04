@@ -3,6 +3,7 @@ package ch.zuehlke.camp2019.reactivepong
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.ReplaySubject
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.simp.SimpMessagingTemplate
@@ -14,6 +15,7 @@ class WebsocketController constructor(@Autowired val template: SimpMessagingTemp
 
     private val initialPosition = Point(0.0, 0.0)
 
+    private val joinBuffer = ReplaySubject.create<String>(20);
     private val leftPlayer = BehaviorSubject.createDefault(initialPosition)
     private val rightPlayer = BehaviorSubject.createDefault(initialPosition)
     private val requestStream = BehaviorSubject.create<String>()
@@ -42,6 +44,11 @@ class WebsocketController constructor(@Autowired val template: SimpMessagingTemp
                                 ballStream.onNext(it.ball)
                                 template.convertAndSend("/topic/game/" + it.requester, it)
                             }
+
+                    joinBuffer.subscribe {
+                        onRequestGameState(it)
+                    }
+
                 }
     }
 
@@ -58,5 +65,10 @@ class WebsocketController constructor(@Autowired val template: SimpMessagingTemp
     @MessageMapping("/requestGameState")
     fun onRequestGameState(id: String) {
         requestStream.onNext(id)
+    }
+
+    @MessageMapping("/join")
+    fun join(id: String) {
+        joinBuffer.onNext(id)
     }
 }

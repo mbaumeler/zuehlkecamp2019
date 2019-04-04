@@ -18,7 +18,7 @@ function connect() {
 
         const stompObserver = rxjs.Observable.create(observer => {
             stompClient.subscribe('/topic/game/' + id, result => observer.next(result));
-            stompClient.send("/app/requestGameState", {}, id);
+            stompClient.send("/app/join", {}, id);
         });
 
         stompObserver
