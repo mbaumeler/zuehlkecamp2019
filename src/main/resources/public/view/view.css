@@ -1,16 +1,27 @@
+html, body {
+    height: 100%;
+    margin: 0px;
+}
+
 .slider {
-    width: 120px;
-    height: 40px;
+    width: 7%;
+    height: 3%;
     background-color: #999;
     position: absolute;
 }
 
 #ball {
-    background-color: blue;
-    height: 50px;
-    width: 50px;
-    border-radius: 50%;
+    top: 0px;
     position: absolute;
+    background-color: #fff;
+    width: 3%;
+    left: 10%;
+    height: 6%;
+    border-radius: 50%;
+}
+
+#sliderTop {
+    top: 0%;
 }
 
 #sliderBottom {
@@ -18,12 +29,28 @@
 }
 
 #sliderSide {
-    height: 120px;
-    width: 40px;
+    height: 14%;
+    width: 1.5%;
+    top: 10%;
 }
+
+#sliderSide.right {
+    right: 0%;
+}
+
+#area {
+    background-color: #dda972;
+    position: relative;
+    padding-top: 50%;
+}
+
 
 body {
     padding: 0px;
-    margin: 0px 50px 50px 0px;
+    margin: 0px;
     overflow: hidden;
+}
+
+.hide {
+    display: none;
 }

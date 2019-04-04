@@ -1,6 +1,6 @@
 function connect() {
     const side = location.search === '?side=LEFT' ? 'LEFT' : 'RIGHT';
-    const socket = new SockJS('/gs-guide-websocket');
+    const socket = new SockJS('/pong-websocket');
     const stompClient = Stomp.over(socket);
     stompClient.connect({}, () => {
         rxjs
