@@ -21,8 +21,8 @@ function connect() {
             .pipe(rxjs.operators.debounceTime(15))
             .subscribe(result => {
                 let {ball, left} = JSON.parse(result.body);
-                ballElm.style.left = `${ball.x}%`;
-                ballElm.style.top = `${ball.y}%`;
+                ballElm.style.left = `${ball.position.x}%`;
+                ballElm.style.top = `${ball.position.y}%`;
                 sliderTop.style.left = `${left.x}%`;
                 sliderBottom.style.left = `${left.x}%`;
                 sliderSide.style.top = `${left.y}%`;

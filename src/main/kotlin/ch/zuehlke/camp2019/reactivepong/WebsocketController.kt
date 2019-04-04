@@ -14,18 +14,27 @@ class WebsocketController constructor(@Autowired val template: SimpMessagingTemp
 
     private val leftPlayer = BehaviorSubject.createDefault(Point(0.0, 0.0))
     private val rightPlayer = BehaviorSubject.createDefault(Point(0.0, 0.0))
-
-    private val bothSliderPositions = Observable.combineLatest<Point, Point, Pair<Point, Point>>(leftPlayer, rightPlayer, BiFunction { left, right -> Pair(left, right) })
-
-    private val requestGameStateStream = BehaviorSubject.create<String>()
-
-    private val positionController = PositionController()
+    private val requestStream = BehaviorSubject.create<String>()
+    private val ballStream = BehaviorSubject.createDefault<Ball>(Ball(Point(0.5, 0.5), Vector(4.0, 3.0), System.nanoTime()))
 
     init {
-        requestGameStateStream
-                .withLatestFrom<Pair<Point, Point>, GameStateRequest>(bothSliderPositions, BiFunction<String, Pair<Point, Point>, GameStateRequest> { id, slidePair -> GameStateRequest(id, slidePair.first, slidePair.second) })
+        val bothSliderPositions =
+                Observable.combineLatest<Point, Point, Pair<Point, Point>>(leftPlayer, rightPlayer,
+                        BiFunction { left, right -> Pair(left, right) })
+        requestStream
+                .withLatestFrom<Pair<Point, Point>, GameStateRequest>(bothSliderPositions,
+                        BiFunction { id, slidePair -> GameStateRequest(id, slidePair.first, slidePair.second) })
+                .withLatestFrom<Ball, GameState>(ballStream,
+                        BiFunction { gameStateRequest, ball ->
+                            currentGameState(
+                                    gameStateRequest.leftSlider,
+                                    gameStateRequest.rightSlider,
+                                    gameStateRequest.id,
+                                    ball)
+                        })
                 .subscribe {
-                    template.convertAndSend("/topic/game/" + it.id, currentGameState(it.leftSlider, it.rightSlider))
+                    ballStream.onNext(it.ball)
+                    template.convertAndSend("/topic/game/" + it.requester, it)
                 }
     }
 
@@ -41,12 +50,11 @@ class WebsocketController constructor(@Autowired val template: SimpMessagingTemp
 
     @MessageMapping("/requestGameState")
     fun onRequestGameState(id: String) {
-        requestGameStateStream.onNext(id)
+        requestStream.onNext(id)
     }
 
-    fun currentGameState(left: Point, right: Point): GameState {
-        positionController.updatePosition()
-        val (xPos, yPos) = positionController.position
-        return GameState(Ball(xPos, yPos), left, right)
+    fun currentGameState(left: Point, right: Point, requester: String, ball: Ball): GameState {
+        val updatedBall = updatePosition(ball)
+        return GameState(updatedBall, left, right, requester)
     }
 }

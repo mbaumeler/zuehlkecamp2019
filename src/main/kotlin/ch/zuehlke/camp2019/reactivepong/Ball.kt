@@ -1,3 +1,3 @@
 package ch.zuehlke.camp2019.reactivepong
 
-class Ball(val x: Double, val y: Double)
+class Ball(val position: Point, val velocity: Vector, val lastUpdate: Long)
