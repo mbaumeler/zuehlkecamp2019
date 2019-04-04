@@ -17,14 +17,14 @@ class WebsocketController constructor(@Autowired val template: SimpMessagingTemp
     private val initialPosition = Point(0.0, 0.0)
 
     private val joinBuffer = ReplaySubject.create<String>(20);
-    private val leftPlayer = BehaviorSubject.createDefault(initialPosition)
-    private val rightPlayer = BehaviorSubject.createDefault(initialPosition)
+    private val leftPlayer = BehaviorSubject.createDefault(initialPosition) // Remove inital position
+    private val rightPlayer = BehaviorSubject.createDefault(initialPosition) // Remove inital position
     private val requestStream = BehaviorSubject.create<String>()
     private val ballStream = BehaviorSubject.createDefault<Ball>(Ball(Point(0.5, 0.5), Vector(4.0, 3.0), System.nanoTime()))
 
     init {
         leftPlayer.zipWith<Point, Point>(rightPlayer, BiFunction { a, b -> b })
-                .skip(1)
+                .skip(0)
                 .take(1)
                 .subscribe {
                     val bothSliderPositions =
@@ -36,7 +36,7 @@ class WebsocketController constructor(@Autowired val template: SimpMessagingTemp
                             .withLatestFrom<Ball, GameState>(ballStream,
                                     BiFunction { gameStateRequest, ball ->
                                         GameState(
-                                                updatePosition(ball),
+                                                updatePosition(ball, gameStateRequest.leftSlider, gameStateRequest.rightSlider),
                                                 gameStateRequest.leftSlider,
                                                 gameStateRequest.rightSlider,
                                                 gameStateRequest.id)
@@ -51,10 +51,6 @@ class WebsocketController constructor(@Autowired val template: SimpMessagingTemp
                     }
 
                 }
-        leftPlayer.throttleLatest(50, TimeUnit.MILLISECONDS)
-                .subscribe {
-                    System.out.print("-".repeat(it.x.toInt()) + "XXX" + "-".repeat(100 - it.x.toInt()) + "\r")
-                }
     }
 
     @MessageMapping("/move/LEFT")
@@ -64,7 +60,7 @@ class WebsocketController constructor(@Autowired val template: SimpMessagingTemp
 
     @MessageMapping("/move/RIGHT")
     fun onMoveEventRight(point: Point) {
-        rightPlayer.onNext(point)
+        rightPlayer.onNext(point.add(Vector(200.0, 0.0)))
     }
 
     @MessageMapping("/requestGameState")

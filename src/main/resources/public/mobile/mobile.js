@@ -7,7 +7,7 @@ function connect() {
     stompClient.connect({}, () => {
         rxjs
             .fromEvent(document, 'touchmove')
-            .pipe(rxjs.operators.throttleTime(30))
+            .pipe(rxjs.operators.throttleTime(10))
             .subscribe(({target, touches}) => {
                 const x = 100 / target.clientWidth * touches[0].clientX;
                 const y = 100 / target.clientHeight * touches[0].clientY;

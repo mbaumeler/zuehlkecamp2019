@@ -33,10 +33,10 @@ function connect() {
             .subscribe(result => {
                 const {ball, left, right} = JSON.parse(result.body);
                 const slider = isLeftSide ? left : right;
-                ballElm.style.left = `${isLeftSide ? ball.position.x * 2 : (ball.position.x - 50) * 2}%`;
+                ballElm.style.left = `${isLeftSide ? ball.position.x / 2 : (ball.position.x - 200) / 2}%`;
                 ballElm.style.top = `${ball.position.y}%`;
-                sliderTop.style.left = `${(slider).x}%`;
-                sliderBottom.style.left = `${slider.x}%`;
+                sliderTop.style.left = `${isLeftSide ? slider.x : slider.x - 200}%`;
+                sliderBottom.style.left = `${isLeftSide ? slider.x : slider.x - 200}%`;
                 sliderSide.style.top = `${slider.y}%`;
                 stompClient.send("/app/requestGameState", {}, id);
             });
