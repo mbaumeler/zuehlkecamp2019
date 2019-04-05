@@ -1,6 +1,5 @@
 function connect() {
     const socket = new SockJS('/pong-websocket');
-    const id = Date.now().toString();
     const isLeftSide = location.search === '?side=LEFT';
     getAndShowQrCode(isLeftSide ? "LEFT" : "RIGHT")
     stompClient = Stomp.over(socket);
@@ -17,8 +16,7 @@ function connect() {
         }
 
         const stompObserver = rxjs.Observable.create(observer => {
-            stompClient.subscribe('/topic/game/' + id, result => observer.next(result));
-            stompClient.send("/app/join", {}, id);
+            stompClient.subscribe('/topic/game', result => observer.next(result));
         });
 
         stompObserver
@@ -29,7 +27,6 @@ function connect() {
             });
 
         stompObserver
-            .pipe(rxjs.operators.debounceTime(30))
             .subscribe(result => {
                 const {ball, left, right} = JSON.parse(result.body);
                 const slider = isLeftSide ? left : right;
@@ -38,7 +35,6 @@ function connect() {
                 sliderTop.style.left = `${isLeftSide ? slider.x / 2 : (slider.x - 200) / 2}%`;
                 sliderBottom.style.left = `${isLeftSide ? slider.x / 2 : (slider.x - 200) / 2}%`;
                 sliderSide.style.top = `${slider.y}%`;
-                stompClient.send("/app/requestGameState", {}, id);
             });
     });
 }
