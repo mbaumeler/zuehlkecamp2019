@@ -11,7 +11,7 @@ function connect() {
             .subscribe(({target, touches}) => {
                 const x = 100 / target.clientWidth * touches[0].clientX;
                 const y = 100 / target.clientHeight * touches[0].clientY;
-                const payload = JSON.stringify({x, y});
+                const payload = JSON.stringify({x: x * 2, y});
                 return stompClient.send(`/app/move/${side}`, {}, payload);
             });
     });

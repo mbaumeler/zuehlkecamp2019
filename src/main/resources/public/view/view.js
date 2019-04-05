@@ -35,8 +35,8 @@ function connect() {
                 const slider = isLeftSide ? left : right;
                 ballElm.style.left = `${isLeftSide ? ball.position.x / 2 : (ball.position.x - 200) / 2}%`;
                 ballElm.style.top = `${ball.position.y}%`;
-                sliderTop.style.left = `${isLeftSide ? slider.x : slider.x - 200}%`;
-                sliderBottom.style.left = `${isLeftSide ? slider.x : slider.x - 200}%`;
+                sliderTop.style.left = `${isLeftSide ? slider.x / 2 : (slider.x - 200) / 2}%`;
+                sliderBottom.style.left = `${isLeftSide ? slider.x / 2 : (slider.x - 200) / 2}%`;
                 sliderSide.style.top = `${slider.y}%`;
                 stompClient.send("/app/requestGameState", {}, id);
             });
