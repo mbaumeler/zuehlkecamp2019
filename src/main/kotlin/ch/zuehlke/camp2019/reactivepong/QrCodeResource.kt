@@ -18,7 +18,7 @@ class QrCodeResource {
 
     @GetMapping("qrcode/{side}", produces = [MediaType.IMAGE_PNG_VALUE])
     fun generate(@PathVariable("side") side: Side): ByteArray? {
-        return generateQRCodeImage(350, 350, side);
+        return generateQRCodeImage(350, 350, side)
     }
 
     private fun generateQRCodeImage(width: Int, height: Int, side: Side): ByteArray? {

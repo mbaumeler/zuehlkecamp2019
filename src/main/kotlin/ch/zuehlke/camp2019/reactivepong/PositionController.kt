@@ -3,16 +3,16 @@ package ch.zuehlke.camp2019.reactivepong
 import java.awt.geom.Ellipse2D
 import kotlin.random.Random
 
-private val ballWidth = 8.0
-private val paddleWidth = 14.0
-private val paddleHeight = 3.0
+private const val ballWidth = 8.0
+private const val paddleWidth = 14.0
+private const val paddleHeight = 3.0
 
-private val nanosPerSecond = 1_000_000_000.0
-private val nominalVelocity = 4.0
+private const val nanosPerSecond = 1_000_000_000.0
+private const val nominalVelocity = 4.0
 
-private val maxVelocityDifference = 0.25
-private val minVelocity = nominalVelocity - (maxVelocityDifference * nominalVelocity)
-private val maxVelocity = nominalVelocity + (maxVelocityDifference * nominalVelocity)
+private const val maxVelocityDifference = 0.25
+private const val minVelocity = nominalVelocity - (maxVelocityDifference * nominalVelocity)
+private const val maxVelocity = nominalVelocity + (maxVelocityDifference * nominalVelocity)
 
 fun updatePosition(ball: Ball, leftSlider: Point, rightSlider: Point): Ball {
     val currentTime = System.nanoTime()
@@ -21,17 +21,16 @@ fun updatePosition(ball: Ball, leftSlider: Point, rightSlider: Point): Ball {
 
     if (isPaddleTouched(newPosition, leftSlider, rightSlider)) {
         return Ball(
-                Point(restrictPositionX(newPosition.x), restrictPositionY(newPosition.y)),
-                updateVelocity(newPosition, ball.velocity),
-                currentTime)
+            Point(restrictPositionX(newPosition.x), restrictPositionY(newPosition.y)),
+            updateVelocity(newPosition, ball.velocity),
+            currentTime)
     }
 
     if (newPosition.x < 0 - ballWidth || newPosition.x > 400 || newPosition.y < 0 - ballWidth || newPosition.y > 100) {
         throw IllegalStateException("You lose")
     }
 
-    return Ball(
-            Point(newPosition.x, newPosition.y), ball.velocity, currentTime)
+    return Ball(Point(newPosition.x, newPosition.y), ball.velocity, currentTime)
 }
 
 private fun isPaddleTouched(newPosition: Point, leftSlider: Point, rightSlider: Point): Boolean {
@@ -52,11 +51,9 @@ private fun isPaddleTouched(newPosition: Point, leftSlider: Point, rightSlider: 
 
 private fun intersects(ellipse2d: Ellipse2D.Double, slider: Point, isLeft: Boolean): Boolean {
     val sidePosition = if (isLeft) 0.0 else 400 - paddleHeight
-    val touchesPaddle =
-            ellipse2d.intersects(slider.x, 0.0, paddleWidth, paddleHeight)
-                    || ellipse2d.intersects(slider.x, 100 - paddleHeight, paddleWidth, paddleHeight)
-                    || ellipse2d.intersects(sidePosition, slider.y, paddleHeight, paddleWidth)
-    return touchesPaddle
+    return ellipse2d.intersects(slider.x, 0.0, paddleWidth, paddleHeight)
+            || ellipse2d.intersects(slider.x, 100 - paddleHeight, paddleWidth, paddleHeight)
+            || ellipse2d.intersects(sidePosition, slider.y, paddleHeight, paddleWidth)
 }
 
 private fun updateVelocity(updatedPosition: Point, velocity: Vector): Vector {

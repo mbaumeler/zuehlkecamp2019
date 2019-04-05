@@ -3,7 +3,6 @@ package ch.zuehlke.camp2019.reactivepong
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.BehaviorSubject
-import io.reactivex.subjects.ReplaySubject
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.simp.SimpMessagingTemplate
@@ -16,14 +15,14 @@ class WebsocketController constructor(@Autowired val template: SimpMessagingTemp
 
     private val initialPosition = Point(0.0, 0.0)
 
-    private val leftPlayer = BehaviorSubject.createDefault(initialPosition) // Remove inital position
-    private val rightPlayer = BehaviorSubject.createDefault(initialPosition) // Remove inital position
+    private val leftPlayer = BehaviorSubject.createDefault(initialPosition) // Remove initial position
+    private val rightPlayer = BehaviorSubject.createDefault(initialPosition) // Remove initial position
     private val requestStream = BehaviorSubject.create<String>()
     private val ballStream = BehaviorSubject.createDefault<Ball>(Ball(Point(0.5, 0.5), Vector(4.0, 3.0), System.nanoTime()))
 
     init {
 
-        leftPlayer.zipWith<Point, Point>(rightPlayer, BiFunction { a, b -> b })
+        leftPlayer.zipWith<Point, Point>(rightPlayer, BiFunction { _, b -> b })
                 .skip(1)
                 .take(1)
                 .subscribe {
