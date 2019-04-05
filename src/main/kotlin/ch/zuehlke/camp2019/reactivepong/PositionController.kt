@@ -19,26 +19,44 @@ fun updatePosition(ball: Ball, leftSlider: Point, rightSlider: Point): Ball {
     val timeDelta = currentTime - ball.lastUpdate
     val newPosition = ball.position.add(ball.velocity.scale(timeDelta / nanosPerSecond))
 
-    val ellipse2d = Ellipse2D.Double(newPosition.x, newPosition.y, ballWidth, ballWidth)
+    if (isPaddleTouched(newPosition, leftSlider, rightSlider)) {
+        return Ball(
+                Point(restrictPositionX(newPosition.x), restrictPositionY(newPosition.y)),
+                updateVelocity(newPosition, ball.velocity),
+                currentTime)
+    }
 
-    if (ball.position.x <= 200) {
-        val intersects =
-                ellipse2d.intersects(leftSlider.x, 0.0, paddleWidth, paddleHeight)
-                        || ellipse2d.intersects(leftSlider.x, 100 - paddleHeight, paddleWidth, paddleHeight)
-                        || ellipse2d.intersects(0.0, leftSlider.y, paddleHeight, paddleWidth)
-
-        if (intersects) {
-            println("Yes Left")
-        }
-    } else {
-
+    if (newPosition.x < 0 - ballWidth || newPosition.x > 400 || newPosition.y < 0 - ballWidth || newPosition.y > 100) {
+        throw IllegalStateException("You lose")
     }
 
     return Ball(
-            Point(restrictPositionX(newPosition.x), restrictPositionY(newPosition.y)),
-            updateVelocity(newPosition, ball.velocity),
-            currentTime
-    )
+            Point(newPosition.x, newPosition.y), ball.velocity, currentTime)
+}
+
+private fun isPaddleTouched(newPosition: Point, leftSlider: Point, rightSlider: Point): Boolean {
+
+    val ellipse2d = Ellipse2D.Double(newPosition.x, newPosition.y, ballWidth, ballWidth)
+    if (newPosition.x <= 200) {
+        if (intersects(ellipse2d, leftSlider, true)) {
+            return true
+        }
+
+    } else {
+        if (intersects(ellipse2d, rightSlider, false)) {
+            return true
+        }
+    }
+    return false
+}
+
+private fun intersects(ellipse2d: Ellipse2D.Double, slider: Point, isLeft: Boolean): Boolean {
+    val sidePosition = if (isLeft) 0.0 else 400 - paddleHeight
+    val touchesPaddle =
+            ellipse2d.intersects(slider.x, 0.0, paddleWidth, paddleHeight)
+                    || ellipse2d.intersects(slider.x, 100 - paddleHeight, paddleWidth, paddleHeight)
+                    || ellipse2d.intersects(sidePosition, slider.y, paddleHeight, paddleWidth)
+    return touchesPaddle
 }
 
 private fun updateVelocity(updatedPosition: Point, velocity: Vector): Vector {
@@ -52,23 +70,23 @@ private fun updateVelocity(updatedPosition: Point, velocity: Vector): Vector {
 }
 
 private fun restrictPositionX(coord: Double) = when {
-    coord < 0 -> -coord
-    coord > 400 -> 800 - coord
+    coord < paddleHeight -> 2 * paddleHeight - coord
+    coord > 400 - paddleHeight - ballWidth -> 800 - 2 * paddleHeight - coord - 2 * ballWidth
     else -> coord
 }
 
 private fun restrictPositionY(coord: Double) = when {
-    coord < 0 -> -coord
-    coord > 100 -> 200 - coord
+    coord < paddleHeight -> 2 * paddleHeight - coord
+    coord > 100 - paddleHeight - ballWidth -> 200 - 2 * paddleHeight - coord - 2 * ballWidth
     else -> coord
 }
 
 private fun velocityMultiplierX(coord: Double) = when {
-    coord < 0 || coord > 400 -> -1.0 + (Random.nextDouble() * 0.1 - 0.05)
+    coord < paddleHeight || coord > 400 - paddleHeight - ballWidth -> -1.0 + (Random.nextDouble() * 0.1 - 0.05)
     else -> 1.0
 }
 
 private fun velocityMultiplierY(coord: Double) = when {
-    coord < 0 || coord > 100 -> -1.0 + (Random.nextDouble() * 0.1 - 0.05)
+    coord < paddleHeight || coord > 100 - paddleHeight - ballWidth -> -1.0 + (Random.nextDouble() * 0.1 - 0.05)
     else -> 1.0
 }

@@ -24,7 +24,7 @@ class WebsocketController constructor(@Autowired val template: SimpMessagingTemp
 
     init {
         leftPlayer.zipWith<Point, Point>(rightPlayer, BiFunction { a, b -> b })
-                .skip(0)
+                .skip(1)
                 .take(1)
                 .subscribe {
                     val bothSliderPositions =

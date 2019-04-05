@@ -29,7 +29,7 @@ function connect() {
             });
 
         stompObserver
-            .pipe(rxjs.operators.debounceTime(15))
+            .pipe(rxjs.operators.debounceTime(30))
             .subscribe(result => {
                 const {ball, left, right} = JSON.parse(result.body);
                 const slider = isLeftSide ? left : right;
