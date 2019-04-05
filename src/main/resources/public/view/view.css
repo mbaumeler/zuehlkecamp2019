@@ -17,6 +17,7 @@ html, body {
     width: 4%;
     left: 10%;
     height: 8%;
+    border-radius: 50%;
 }
 
 #sliderTop {

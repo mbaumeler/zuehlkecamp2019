@@ -19,13 +19,13 @@ fun updatePosition(ball: Ball, leftSlider: Point, rightSlider: Point): Ball {
     val timeDelta = currentTime - ball.lastUpdate
     val newPosition = ball.position.add(ball.velocity.scale(timeDelta / nanosPerSecond))
 
-    val ellipse2d = Ellipse2D.Double(ball.position.x, ball.position.y, ballWidth, ballWidth)
+    val ellipse2d = Ellipse2D.Double(newPosition.x, newPosition.y, ballWidth, ballWidth)
 
     if (ball.position.x <= 200) {
         val intersects =
-                ellipse2d.intersects(leftSlider.x, paddleHeight, leftSlider.x + paddleWidth, paddleHeight)
-                        || ellipse2d.intersects(leftSlider.x, 100 - paddleHeight, leftSlider.x + paddleWidth, 100 - paddleHeight)
-                        || ellipse2d.intersects(paddleHeight, leftSlider.y, paddleHeight, leftSlider.y + paddleWidth)
+                ellipse2d.intersects(leftSlider.x, 0.0, paddleWidth, paddleHeight)
+                        || ellipse2d.intersects(leftSlider.x, 100 - paddleHeight, paddleWidth, paddleHeight)
+                        || ellipse2d.intersects(0.0, leftSlider.y, paddleHeight, paddleWidth)
 
         if (intersects) {
             println("Yes Left")
