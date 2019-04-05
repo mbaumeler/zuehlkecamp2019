@@ -17,7 +17,6 @@ class WebsocketController constructor(@Autowired val template: SimpMessagingTemp
 
     private val leftPlayer = BehaviorSubject.createDefault(initialPosition) // Remove initial position
     private val rightPlayer = BehaviorSubject.createDefault(initialPosition) // Remove initial position
-    private val requestStream = BehaviorSubject.create<String>()
     private val ballStream = BehaviorSubject.createDefault<Ball>(Ball(Point(0.5, 0.5), Vector(4.0, 3.0), System.nanoTime()))
 
     init {
@@ -26,29 +25,23 @@ class WebsocketController constructor(@Autowired val template: SimpMessagingTemp
                 .skip(1)
                 .take(1)
                 .subscribe {
-                    val bothSliderPositions =
-                            Observable.combineLatest<Point, Point, Pair<Point, Point>>(leftPlayer, rightPlayer,
-                                    BiFunction { left, right -> Pair(left, right) })
-                    requestStream
-                            .withLatestFrom<Pair<Point, Point>, GameStateRequest>(bothSliderPositions,
-                                    BiFunction { id, slidePair -> GameStateRequest(id, slidePair.first, slidePair.second) })
-                            .withLatestFrom<Ball, GameState>(ballStream,
-                                    BiFunction { gameStateRequest, ball ->
-                                        GameState(
-                                                updatePosition(ball, gameStateRequest.leftSlider, gameStateRequest.rightSlider),
-                                                gameStateRequest.leftSlider,
-                                                gameStateRequest.rightSlider,
-                                                gameStateRequest.id)
-                                    })
+                    Observable
+                            .interval(20, TimeUnit.MILLISECONDS)
+                            .switchMap {
+                                val both = Observable.combineLatest<Point, Point, Pair<Point, Point>>(leftPlayer, rightPlayer,
+                                        BiFunction { left, right -> Pair(left, right) })
+                                both.withLatestFrom<Ball, GameState>(ballStream,
+                                        BiFunction { gameStateRequest, ball ->
+                                            GameState(
+                                                    updatePosition(ball, gameStateRequest.first, gameStateRequest.second),
+                                                    gameStateRequest.first,
+                                                    gameStateRequest.second)
+                                        })
+                            }
                             .subscribe {
                                 ballStream.onNext(it.ball)
                                 template.convertAndSend("/topic/game", it)
                             }
-
-                    Observable.interval(20, TimeUnit.MILLISECONDS).subscribe {
-                        requestStream.onNext("")
-                    }
-
                 }
     }
 
